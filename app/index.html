@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEAM Explorer - Blockchain Explorer for Beam Privacy</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
 :root {
     --bg-primary: #0a0e17;
@@ -41,7 +38,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: Arial, Verdana, Helvetica, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
@@ -181,7 +178,7 @@ a:hover { color: var(--accent-secondary); }
 .stat-icon.yellow svg { color: var(--accent-yellow); }
 .stat-info { display: flex; flex-direction: column; min-width: 0; }
 .stat-label { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; }
-.stat-value { font-size: 1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.stat-value { font-size: 1rem; font-weight: 700; font-family: "Lucida Console", "Monaco", "Courier New", monospace; }
 
 /* Sections */
 .section { margin-bottom: var(--spacing-2xl); }
@@ -241,7 +238,7 @@ a:hover { color: var(--accent-secondary); }
 .data-table .loading, .data-table .empty { text-align: center; padding: var(--spacing-xl); color: var(--text-muted); cursor: default; }
 
 /* Typography helpers */
-.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; }
+.mono { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.8125rem; }
 .hash { color: var(--accent-secondary); cursor: pointer; }
 .hash:hover { text-decoration: underline; }
 .truncate { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
@@ -277,7 +274,7 @@ a:hover { color: var(--accent-secondary); }
 .card-title h4 { font-size: 1rem; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-title .subtitle { color: var(--text-muted); font-size: 0.875rem; }
 .card-badge {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: "Lucida Console", "Monaco", "Courier New", monospace;
     font-size: 0.75rem;
     color: var(--text-muted);
     background: var(--bg-tertiary);
@@ -287,7 +284,7 @@ a:hover { color: var(--accent-secondary); }
 .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--border-color); }
 .card-stat { display: flex; flex-direction: column; }
 .card-stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
-.card-stat-value { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 500; }
+.card-stat-value { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.875rem; font-weight: 500; }
 
 /* Pool cards */
 .pool-pair { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
@@ -308,7 +305,7 @@ a:hover { color: var(--accent-secondary); }
 .pool-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
 .pool-stat { padding: var(--spacing-sm); background: var(--bg-tertiary); border-radius: var(--radius-sm); }
 .pool-stat-label { font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase; }
-.pool-stat-value { font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; margin-top: 2px; }
+.pool-stat-value { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.8125rem; margin-top: 2px; }
 .pool-stat.full-width { grid-column: 1 / -1; }
 
 /* Trade type badges */
@@ -358,7 +355,7 @@ a:hover { color: var(--accent-secondary); }
     padding: var(--spacing-md);
 }
 .detail-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: var(--spacing-xs); }
-.detail-value { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; word-break: break-all; }
+.detail-value { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.9rem; word-break: break-all; }
 .detail-section { margin-top: var(--spacing-xl); }
 .detail-section h3 { font-size: 1.25rem; margin-bottom: var(--spacing-lg); }
 
@@ -512,7 +509,7 @@ a:hover { color: var(--accent-secondary); }
 .swap-coin-icon.wbtc { background: linear-gradient(135deg, #5a5564, #7a7584); }
 .swap-coin-icon.beam { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); }
 .swap-coin-name { font-weight: 600; margin-bottom: var(--spacing-xs); }
-.swap-coin-amount { font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); }
+.swap-coin-amount { font-family: "Lucida Console", "Monaco", "Courier New", monospace; color: var(--text-secondary); }
     </style>
 </head>
 <body>
