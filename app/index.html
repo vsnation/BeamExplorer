@@ -241,6 +241,7 @@ a:hover { color: var(--accent-secondary); }
 .hash { color: var(--accent-secondary); cursor: pointer; }
 .hash:hover { text-decoration: underline; }
 .truncate { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+.time { white-space: nowrap; }
 .amount-positive { color: var(--success); }
 .amount-negative { color: var(--error); }
 
@@ -1061,7 +1062,7 @@ async function loadRecentBlocks() {
         tbody.innerHTML = rows.map(b => `
             <tr onclick="showBlockDetail(${b.Height})">
                 <td><span class="mono hash">${formatNumber(b.Height)}</span></td>
-                <td>${formatTime(b.Timestamp)}</td>
+                <td><span class="time">${formatTime(b.Timestamp)}</span></td>
                 <td>${formatNumber(cleanNumber(b.Txs))}</td>
                 <td>${formatNumber(cleanNumber(b['MW.Inputs']))}</td>
                 <td>${formatNumber(cleanNumber(b['MW.Outputs']))}</td>
@@ -1111,7 +1112,7 @@ async function loadBlocks(append = false) {
             return `<tr onclick="showBlockDetail(${b.Height})">${blockHeaders.map(h => {
                 let val = b[h];
                 if (h === 'Height') return `<td><span class="mono hash">${formatNumber(val)}</span></td>`;
-                if (h === 'Timestamp') return `<td>${formatTime(val)}</td>`;
+                if (h === 'Timestamp') return `<td><span class="time">${formatTime(val)}</span></td>`;
                 if (h === 'Hash') return `<td class="mono"><span class="truncate hash" title="${val}">${val?.slice(0,12)}...</span></td>`;
                 if (h === 'Fee' || h === 'T.Fee') return `<td class="mono">${formatBeam(val || 0)}</td>`;
                 if (h === 'Chainwork') return `<td class="mono">${formatLargeNumber(cleanNumber(val))}</td>`;
