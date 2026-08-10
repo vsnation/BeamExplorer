@@ -1427,7 +1427,7 @@ async function showAssetDetail(id) {
                     <div class="detail-label">Owner Contract</div>
                     <div class="detail-value">${resp.owner ? `<span class="hash truncate" onclick="showContractDetail('${resp.owner}')" title="${resp.owner}">${resp.owner.slice(0,12)}...${resp.owner.slice(-8)}</span>` : 'None'}</div>
                 </div>
-                ${meta.OPT_SITE_URL ? `<div class="detail-item"><div class="detail-label">Website</div><div class="detail-value"><a href="${esc(meta.OPT_SITE_URL)}" target="_blank">${esc(meta.OPT_SITE_URL.slice(0,40))}...</a></div></div>` : ''}
+                ${meta.OPT_SITE_URL ? `<div class="detail-item"><div class="detail-label">Website</div><div class="detail-value"><a href="${esc(safeUrl(meta.OPT_SITE_URL))}" target="_blank" rel="noopener noreferrer">${esc(meta.OPT_SITE_URL.slice(0,40))}...</a></div></div>` : ''}
             </div>
 
             ${distribution.length ? `
@@ -2012,13 +2012,45 @@ function cleanNumber(s) {
     if (!s) return 0;
     return parseInt(String(s).replace(/,/g, '')) || 0;
 }
+/**
+ * Escape for HTML, including quotes.
+ *
+ * This used textContent -> innerHTML, which escapes < > and & but NOT quotes.
+ * Safe for text, unsafe in an attribute - and it was used in one:
+ * href="${esc(meta.OPT_SITE_URL)}", where OPT_SITE_URL is on-chain metadata
+ * written by whoever minted the asset. A quote in it breaks out of the
+ * attribute and adds one of their own.
+ */
 function esc(s) {
-    const d = document.createElement('div');
-    d.textContent = s || '';
-    return d.innerHTML;
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
+
+/**
+ * A link target that cannot be javascript: or data:. Asset metadata carries a
+ * website URL chosen by the minter and it went straight into href.
+ */
+function safeUrl(u) {
+    const t = String(u == null ? '' : u).trim();
+    if (!t) return '';
+    try {
+        const parsed = new URL(t, window.location.href);
+        return (parsed.protocol === 'http:' || parsed.protocol === 'https:') ? parsed.href : '';
+    } catch (e) { return ''; }
+}
+
+/**
+ * Copy button. The value used to be interpolated raw into the onclick, so
+ * anything with a quote closed the JS string; HTML-escaping alone does not fix
+ * that, since the parser decodes entities before the JS is parsed. The value
+ * travels in a data attribute and the handler reads it from there.
+ */
 function copyBtn(text) {
-    return `<button class="copy-btn" onclick="event.stopPropagation(); copyToClipboard('${text}', this)" title="Copy">📋</button>`;
+    return `<button class="copy-btn" data-copy="${esc(text)}" onclick="event.stopPropagation(); copyToClipboard(this.dataset.copy, this)" title="Copy">📋</button>`;
 }
 function copyToClipboard(text, btn) {
     navigator.clipboard.writeText(text).then(() => {
