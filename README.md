@@ -1,6 +1,6 @@
 # BEAM Explorer
 
-A modern, feature-rich blockchain explorer for the [BEAM](https://beam.mw) privacy blockchain. Built as a single-page application with no server required - just open the HTML file in your browser.
+A modern, feature-rich blockchain explorer front end for the [BEAM](https://beam.mw) privacy blockchain. Built as a single-page application with no server required - just open the HTML file in your browser.
 
 ![BEAM Explorer](https://img.shields.io/badge/BEAM-Explorer-25c2a0?style=for-the-badge)
 ![No Dependencies](https://img.shields.io/badge/Dependencies-None-green?style=for-the-badge)
@@ -10,14 +10,15 @@ A modern, feature-rich blockchain explorer for the [BEAM](https://beam.mw) priva
 - **No Server Required** - Works directly in your browser
 - **Multiple Node Support** - Connect to any BEAM Explorer API node
 - **Real-time Data** - Live blockchain statistics
-- **Privacy-First Design** - Dark theme optimized for privacy-focused users
+- **Elegant Design** - Dark theme optimized for privacy-focused users
 - **Mobile Responsive** - Works on all devices
-- **Zero Dependencies** - Pure HTML, CSS, and JavaScript
+- **Zero Dependencies** - Pure HTML, SVG, CSS and JavaScript
+- **In-wallet dApp** - Packaged to run as a dApp in the BEAM desktop wallet 
 
 ## Quick Start
 
 1. Download `BeamExplorer.html`
-2. Open it in your web browser
+2. Open it in your web browser.
 3. That's it! No installation, no build process, no server needed.
 
 ```bash

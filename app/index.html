@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEAM Explorer - Blockchain Explorer for Beam Privacy</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
 :root {
     --bg-primary: #0a0e17;
@@ -41,7 +38,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: Arial, Verdana, Helvetica, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
@@ -76,7 +73,6 @@ a:hover { color: var(--accent-secondary); }
     font-size: 1.25rem;
     cursor: pointer;
 }
-.logo svg { color: var(--accent-primary); }
 .nav { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
 .nav-link {
     padding: var(--spacing-sm) var(--spacing-md);
@@ -181,7 +177,7 @@ a:hover { color: var(--accent-secondary); }
 .stat-icon.yellow svg { color: var(--accent-yellow); }
 .stat-info { display: flex; flex-direction: column; min-width: 0; }
 .stat-label { font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; }
-.stat-value { font-size: 1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.stat-value { font-size: 1rem; font-weight: 700; font-family: "Lucida Console", "Monaco", "Courier New", monospace; }
 
 /* Sections */
 .section { margin-bottom: var(--spacing-2xl); }
@@ -241,10 +237,11 @@ a:hover { color: var(--accent-secondary); }
 .data-table .loading, .data-table .empty { text-align: center; padding: var(--spacing-xl); color: var(--text-muted); cursor: default; }
 
 /* Typography helpers */
-.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; }
+.mono { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.8125rem; }
 .hash { color: var(--accent-secondary); cursor: pointer; }
 .hash:hover { text-decoration: underline; }
 .truncate { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+.time { white-space: nowrap; }
 .amount-positive { color: var(--success); }
 .amount-negative { color: var(--error); }
 
@@ -277,7 +274,7 @@ a:hover { color: var(--accent-secondary); }
 .card-title h4 { font-size: 1rem; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-title .subtitle { color: var(--text-muted); font-size: 0.875rem; }
 .card-badge {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: "Lucida Console", "Monaco", "Courier New", monospace;
     font-size: 0.75rem;
     color: var(--text-muted);
     background: var(--bg-tertiary);
@@ -287,7 +284,7 @@ a:hover { color: var(--accent-secondary); }
 .card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); padding-top: var(--spacing-md); border-top: 1px solid var(--border-color); }
 .card-stat { display: flex; flex-direction: column; }
 .card-stat-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
-.card-stat-value { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 500; }
+.card-stat-value { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.875rem; font-weight: 500; }
 
 /* Pool cards */
 .pool-pair { display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
@@ -308,7 +305,7 @@ a:hover { color: var(--accent-secondary); }
 .pool-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
 .pool-stat { padding: var(--spacing-sm); background: var(--bg-tertiary); border-radius: var(--radius-sm); }
 .pool-stat-label { font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase; }
-.pool-stat-value { font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; margin-top: 2px; }
+.pool-stat-value { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.8125rem; margin-top: 2px; }
 .pool-stat.full-width { grid-column: 1 / -1; }
 
 /* Trade type badges */
@@ -358,7 +355,7 @@ a:hover { color: var(--accent-secondary); }
     padding: var(--spacing-md);
 }
 .detail-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: var(--spacing-xs); }
-.detail-value { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; word-break: break-all; }
+.detail-value { font-family: "Lucida Console", "Monaco", "Courier New", monospace; font-size: 0.9rem; word-break: break-all; }
 .detail-section { margin-top: var(--spacing-xl); }
 .detail-section h3 { font-size: 1.25rem; margin-bottom: var(--spacing-lg); }
 
@@ -512,7 +509,7 @@ a:hover { color: var(--accent-secondary); }
 .swap-coin-icon.wbtc { background: linear-gradient(135deg, #5a5564, #7a7584); }
 .swap-coin-icon.beam { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); }
 .swap-coin-name { font-weight: 600; margin-bottom: var(--spacing-xs); }
-.swap-coin-amount { font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); }
+.swap-coin-amount { font-family: "Lucida Console", "Monaco", "Courier New", monospace; color: var(--text-secondary); }
     </style>
 </head>
 <body>
@@ -521,10 +518,7 @@ a:hover { color: var(--accent-secondary); }
             <div class="container">
                 <div class="header-content">
                     <div class="logo" onclick="showPage('home')">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
-                            <path d="M10 16L14 20L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
+                        <svg height="32" width="32" viewBox="42 42 460 460"><defs><linearGradient id="Gradient1" x1="-24.6" y1="683.51" x2="-23.57" y2="683.51" gradientTransform="matrix(98, 0, 0, -47, 2497.75, 32364.11)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="1" stop-color="#fff"></stop></linearGradient><linearGradient id="Gradient2" x1="-28.7" y1="703.17" x2="-27.72" y2="703.17" gradientTransform="matrix(-98, 0, 0, 26, -2353.25, -18019.72)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9d6eff" stop-opacity="0"></stop><stop offset="1" stop-color="#a18cff"></stop></linearGradient><linearGradient id="Gradient3" x1="-28.69" y1="682.8" x2="-27.57" y2="682.8" gradientTransform="translate(-2353.25 29603.78) rotate(180) scale(98 43)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ae60d6" stop-opacity="0"></stop><stop offset="1" stop-color="#ab38e6"></stop></linearGradient><linearGradient id="Gradient4" x1="-28.68" y1="685.09" x2="-27.47" y2="685.09" gradientTransform="translate(-2353.25 41328.94) rotate(180) scale(98 60)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fd76fd" stop-opacity="0"></stop><stop offset="1" stop-color="#ff51ff"></stop></linearGradient></defs><circle id="circle" fill="#0b1624" cx="272" cy="272" r="230"></circle><g id="beam-logo"><path id="Triangle-left" fill="#24c1ff" d="M272.25,327.21H194.72l77.5-135V110.45L120.31,370.64H272.25Z"></path><path id="Triangle-right" fill="#0b76ff" d="M272.25,327.21h77.53l-77.5-135V110.45L424.19,370.64H272.25Z"></path><polygon id="Triangle-small-left" fill="#39fff2" points="272.25 226.3 272.25 313.57 224.77 313.67 272.25 226.3"></polygon><polygon id="Triangle-small-right" fill="#00e2c2" points="272.25 226.3 272.25 313.57 319.73 313.67 272.25 226.3"></polygon><polygon id="Ray1-left" fill="url(#Gradient1)" points="86.13 191.81 272.25 277.83 272.25 286.83 86.13 246.1 86.13 191.81"></polygon><polygon id="Ray2-right-low" fill="url(#Gradient2)" points="458.75 274.33 272.25 286.83 272.25 283.83 458.75 238.5 458.75 274.33"></polygon><polygon id="Ray3-right-mid" fill="url(#Gradient3)" points="458.75 202.67 272.25 280.83 272.25 283.83 458.75 238.5 458.75 202.67"></polygon><polygon id="Ray4-right-top" fill="url(#Gradient4)" points="458.75 166.83 272.25 277.83 272.25 280.83 458.75 202.67 458.75 166.83"></polygon></g></svg>
                         <span>BEAM Explorer</span>
                     </div>
                     <nav class="nav">
@@ -662,7 +656,7 @@ a:hover { color: var(--accent-secondary); }
                 <div id="page-block-detail" class="page">
                     <section class="section">
                         <a href="#" class="back-link" onclick="showPage('blocks'); return false;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            <svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                             Back to Blocks
                         </a>
                         <div id="block-detail-content"><div class="loading-card"><span class="spinner"></span>Loading block...</div></div>
@@ -688,7 +682,7 @@ a:hover { color: var(--accent-secondary); }
                 <div id="page-asset-detail" class="page">
                     <section class="section">
                         <a href="#" class="back-link" onclick="showPage('assets'); return false;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            <svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                             Back to Assets
                         </a>
                         <div id="asset-detail-content"><div class="loading-card"><span class="spinner"></span>Loading asset...</div></div>
@@ -750,7 +744,7 @@ a:hover { color: var(--accent-secondary); }
                 <div id="page-contract-detail" class="page">
                     <section class="section">
                         <a href="#" class="back-link" onclick="showPage('contracts'); return false;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            <svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                             Back to Contracts
                         </a>
                         <div id="contract-detail-content"><div class="loading-card"><span class="spinner"></span>Loading contract...</div></div>
@@ -1023,14 +1017,14 @@ async function loadStatus() {
 
 function getStatIcon(type) {
     const icons = {
-        blocks: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
-        peers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-        chain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
-        shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-        'shield-total': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
-        time: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
-        clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
-        hash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>',
+        blocks: '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+        peers: '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+        chain: '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+        shield: '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+        'shield-total': '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+        time: '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+        clock: '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+        hash: '<svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>',
     };
     return icons[type] || icons.blocks;
 }
@@ -1068,7 +1062,7 @@ async function loadRecentBlocks() {
         tbody.innerHTML = rows.map(b => `
             <tr onclick="showBlockDetail(${b.Height})">
                 <td><span class="mono hash">${formatNumber(b.Height)}</span></td>
-                <td>${formatTime(b.Timestamp)}</td>
+                <td><span class="time">${formatTime(b.Timestamp)}</span></td>
                 <td>${formatNumber(cleanNumber(b.Txs))}</td>
                 <td>${formatNumber(cleanNumber(b['MW.Inputs']))}</td>
                 <td>${formatNumber(cleanNumber(b['MW.Outputs']))}</td>
@@ -1118,7 +1112,7 @@ async function loadBlocks(append = false) {
             return `<tr onclick="showBlockDetail(${b.Height})">${blockHeaders.map(h => {
                 let val = b[h];
                 if (h === 'Height') return `<td><span class="mono hash">${formatNumber(val)}</span></td>`;
-                if (h === 'Timestamp') return `<td>${formatTime(val)}</td>`;
+                if (h === 'Timestamp') return `<td><span class="time">${formatTime(val)}</span></td>`;
                 if (h === 'Hash') return `<td class="mono"><span class="truncate hash" title="${val}">${val?.slice(0,12)}...</span></td>`;
                 if (h === 'Fee' || h === 'T.Fee') return `<td class="mono">${formatBeam(val || 0)}</td>`;
                 if (h === 'Chainwork') return `<td class="mono">${formatLargeNumber(cleanNumber(val))}</td>`;
