@@ -5,7 +5,7 @@
     "icon": "localapp/app/appicon.svg",
     "guid": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
     "major": 0,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "api_version": "7.3",
     "min_api_version": "7.3"
 }
