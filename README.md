@@ -29,10 +29,13 @@ open BeamExplorer.html
 
 ## Pages
 
+### Search
+The search field in the header takes a **block height** (`3740302`, `3,740,302` and `3 740 302` all work) or a **kernel ID** (64 hex characters) and opens that block, with the kernel highlighted. A 64-character ID that isn't a kernel is tried as a contract ID. Explorer nodes can't look a block up by its hash, so use the height for that.
+
 ### Home
 The dashboard showing key blockchain statistics:
 - **Block Height** - Current blockchain height
-- **Peers Connected** - Active network peers
+- **Peers Connected** - Active network peers (click the card for the list of peer addresses)
 - **Chainwork** - Total proof of work
 - **Shielded Outputs (24h)** - Privacy transactions in last 24 hours
 - **Total Shielded Outputs** - All-time shielded transactions

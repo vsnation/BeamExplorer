@@ -119,6 +119,93 @@ a:hover { color: var(--accent-secondary); }
     font-weight: 500;
 }
 
+/* Search (block height or kernel ID) */
+.header-search { position: relative; display: flex; flex: 1 1 200px; max-width: 280px; }
+.header-search input {
+    width: 100%;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) 40px var(--spacing-sm) var(--spacing-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+.header-search input:focus { outline: none; border-color: var(--accent-primary); }
+.header-search input::placeholder { color: var(--text-muted); }
+.header-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.search-btn {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+.search-btn:hover, .search-btn:focus-visible { color: var(--accent-primary); outline: none; }
+.search-btn svg { width: 18px; height: 18px; }
+.search-message {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    min-width: 260px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    box-shadow: var(--shadow-lg);
+    z-index: 110;
+}
+.search-message.show { display: block; }
+.search-message.error { border-color: rgba(239, 68, 68, 0.5); color: var(--text-primary); }
+/* Below this width the field folds into a button next to the node picker
+   and opens as a row of its own, so the sticky header stays short. */
+@media (max-width: 1240px) {
+    .header-search { flex: 0 0 auto; max-width: none; }
+    .header-search input { display: none; }
+    .header-search .search-btn {
+        position: static;
+        transform: none;
+        width: 40px;
+        height: 38px;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+    }
+    .header-search.open { order: 10; flex: 1 1 100%; }
+    .header-search.open input { display: block; }
+    .header-search.open .search-btn {
+        position: absolute;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 34px;
+        background: transparent;
+        border: none;
+    }
+}
+.data-table tbody tr.row-match td { background: rgba(37, 194, 160, 0.1); }
+.data-table tbody tr.row-match td:first-child { box-shadow: inset 3px 0 0 var(--accent-primary); }
+.stat-card.clickable { cursor: pointer; }
+.stat-card.clickable::after { content: '\203A'; margin-left: auto; color: var(--text-muted); font-size: 1.5rem; line-height: 1; }
+.stat-card.clickable:hover::after, .stat-card.clickable:focus-visible::after { color: var(--accent-primary); }
+.stat-card.clickable:focus-visible { outline: none; border-color: var(--accent-primary); }
+.data-table.static tbody tr { cursor: default; }
+.data-table.static tbody tr:hover { background: transparent; }
+.data-table .num-col { width: 4rem; }
+.link-btn { background: none; border: none; color: var(--accent-primary); cursor: pointer; font: inherit; padding: 0; }
+.link-btn:hover { color: var(--accent-secondary); }
+
 /* Main content */
 .main { padding: var(--spacing-xl) 0; min-height: calc(100vh - 200px); }
 .page { display: none; }
@@ -529,6 +616,13 @@ a:hover { color: var(--accent-secondary); }
                         <span class="nav-link" data-page="contracts" onclick="showPage('contracts')">Contracts</span>
                         <span class="nav-link" data-page="swaps" onclick="showPage('swaps')">Atomic Swaps</span>
                     </nav>
+                    <form class="header-search" id="headerSearch" role="search" onsubmit="runSearch(event)" autocomplete="off">
+                        <input type="search" id="searchInput" placeholder="Block height or kernel ID" aria-label="Search by block height or kernel ID" spellcheck="false" enterkeyhint="search">
+                        <button type="submit" class="search-btn" aria-label="Search" title="Search by block height or kernel ID">
+                            <svg height="18" width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+                        </button>
+                        <div class="search-message" id="searchMessage" role="status" aria-live="polite"></div>
+                    </form>
                     <div class="node-selector">
                         <span class="node-status" id="nodeStatus"></span>
                         <select id="nodeSelect" onchange="changeNode()">
@@ -773,6 +867,19 @@ a:hover { color: var(--accent-secondary); }
                         </div>
                     </section>
                 </div>
+
+                <!-- Peers Page (opened from the Peers Connected card) -->
+                <div id="page-peers" class="page">
+                    <section class="section">
+                        <a href="#" class="back-link" onclick="showPage('home'); return false;">
+                            <svg height="32" width="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            Back to Home
+                        </a>
+                        <div class="section-header"><h2 id="peers-title">Connected Peers</h2></div>
+                        <p class="section-desc">The nodes this explorer node is connected to right now, as address:port.</p>
+                        <div id="peers-content"><div class="loading-card"><span class="spinner"></span>Loading peers...</div></div>
+                    </section>
+                </div>
             </div>
         </main>
 
@@ -912,6 +1019,132 @@ function showPageDirect(page) {
     window.scrollTo(0, 0);
 }
 
+// ==================== SEARCH ====================
+// One field: a block height (3,740,302 / 3 740 302 / 3740302) or a 64-hex
+// kernel ID. The node has no lookup by block hash, so a 64-hex string that
+// is not a kernel is tried as a contract ID before giving up.
+// Where people give up: pasting a block hash (the miss says to use the
+// height), a typo (the hint says what a height and an ID look like), a slow
+// or dead node (the message says to try again or pick another node).
+const searchFolded = window.matchMedia('(max-width: 1240px)');
+
+function searchMessage(text, isError = false) {
+    const el = document.getElementById('searchMessage');
+    el.textContent = text || '';
+    el.classList.toggle('show', !!text);
+    el.classList.toggle('error', !!text && isError);
+}
+
+function closeSearch() {
+    const form = document.getElementById('headerSearch');
+    searchMessage('');
+    form.classList.remove('open');
+    document.getElementById('searchInput').blur();
+}
+
+function shortId(s) {
+    return s.length > 20 ? `${s.slice(0, 10)}…${s.slice(-6)}` : s;
+}
+
+async function runSearch(event) {
+    event.preventDefault();
+    const form = document.getElementById('headerSearch');
+    const input = document.getElementById('searchInput');
+    if (searchFolded.matches && !form.classList.contains('open')) {
+        form.classList.add('open');
+        input.focus();
+        return;
+    }
+    const raw = input.value.trim();
+    const q = raw.replace(/[\s,._]/g, '');
+    if (!q) {
+        searchMessage('Type a block height, like 3,740,302, or a 64-character kernel ID.');
+        input.focus();
+        return;
+    }
+    const isHeight = /^\d{1,12}$/.test(q);
+    const isId = /^[0-9a-f]{64}$/i.test(q);
+    if (!isHeight && !isId) {
+        searchMessage(`"${shortId(raw)}" doesn't look like a block height or a kernel ID. A height is a number like 3,740,302; a kernel ID is 64 characters of 0-9 and a-f.`, true);
+        return;
+    }
+    searchMessage('Searching…');
+    try {
+        if (isHeight) {
+            const height = Number(q);
+            const block = await fetchAPI('/block', { height });
+            if (block.found) {
+                closeSearch();
+                renderBlockDetail(block, height);
+                return;
+            }
+            const tip = int(currentBlockHeight);
+            searchMessage(tip && height > tip
+                ? `Block ${formatNumber(height)} doesn't exist yet. The latest block is ${formatNumber(tip)}.`
+                : `This node has no block at height ${formatNumber(height)}.`, true);
+            return;
+        }
+        const id = q.toLowerCase();
+        const block = await fetchAPI('/block', { kernel: id });
+        if (block.found) {
+            closeSearch();
+            renderBlockDetail(block, block.height, id);
+            return;
+        }
+        const contract = await fetchAPI('/contract', { id, nMaxTxs: 1 });
+        if (contract && (contract.kind != null || countNestedTable(contract['Version History']) > 0)) {
+            closeSearch();
+            showContractDetail(id);
+            return;
+        }
+        searchMessage(`Nothing found for ${shortId(id)}: it isn't a kernel ID or a contract ID on this node. Blocks can't be looked up by their hash, so use the block height instead.`, true);
+    } catch (e) {
+        searchMessage(`Couldn't reach the node (${e.message}). Try again, or pick another node.`, true);
+    }
+}
+
+document.addEventListener('click', e => {
+    const form = document.getElementById('headerSearch');
+    if (form && !form.contains(e.target)) {
+        searchMessage('');
+        if (!document.getElementById('searchInput').value.trim()) form.classList.remove('open');
+    }
+});
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('headerSearch').contains(document.activeElement)) closeSearch();
+});
+document.addEventListener('input', e => {
+    if (e.target.id === 'searchInput') searchMessage('');
+});
+
+// ==================== PEERS ====================
+async function showPeers() {
+    showPageDirect('peers');
+    const title = document.getElementById('peers-title');
+    const content = document.getElementById('peers-content');
+    title.textContent = 'Connected Peers';
+    content.innerHTML = '<div class="loading-card"><span class="spinner"></span>Loading peers...</div>';
+    try {
+        const peers = await fetchAPI('/peers');
+        const list = Array.isArray(peers) ? peers : [];
+        title.textContent = `Connected Peers (${formatNumber(list.length)})`;
+        if (!list.length) {
+            content.innerHTML = '<div class="loading-card">This node isn\'t connected to any peers right now. <button class="link-btn" onclick="showPeers()">Check again</button></div>';
+            return;
+        }
+        content.innerHTML = `
+            <div class="table-container">
+                <table class="data-table static">
+                    <thead><tr><th class="num-col">#</th><th>Address</th></tr></thead>
+                    <tbody>${list.map((p, i) => `<tr><td class="mono">${i + 1}</td><td class="mono">${esc(p)}</td></tr>`).join('')}</tbody>
+                </table>
+            </div>`;
+    } catch (e) {
+        const why = /HTTP 404/.test(e.message) ? 'This node doesn\'t share its list of peers.' : `Couldn't load the list of peers (${esc(e.message)}).`;
+        content.innerHTML = `<div class="loading-card">${why} <button class="link-btn" onclick="showPeers()">Try again</button></div>`;
+    }
+}
+
 // ==================== COLUMN SELECTOR ====================
 function toggleColumnSelector() {
     const groups = document.getElementById('column-groups');
@@ -983,7 +1216,7 @@ async function loadStatus() {
         // Build comprehensive stats grid
         const stats = [
             { label: 'Block Height', value: formatNumber(status.height), icon: 'blocks' },
-            { label: 'Peers Connected', value: formatNumber(int(status.peers_count)), icon: 'peers', color: 'purple' },
+            { label: 'Peers Connected', value: formatNumber(int(status.peers_count)), icon: 'peers', color: 'purple', action: 'showPeers()', hint: 'Show the list of peers' },
             { label: 'Chainwork', value: formatLargeNumber(cleanNumber(status.chainwork)), icon: 'chain', color: 'cyan' },
             { label: 'Shielded Outs (24h)', value: formatNumber(status.shielded_outputs_per_24h || 0), icon: 'shield', color: 'orange' },
             { label: 'Total Shielded Outs', value: formatNumber(status.shielded_outputs_total || 0), icon: 'shield-total' },
@@ -993,7 +1226,7 @@ async function loadStatus() {
         ];
 
         statsGrid.innerHTML = stats.map(s => `
-            <div class="stat-card">
+            <div class="stat-card${s.action ? ' clickable' : ''}"${s.action ? ` role="button" tabindex="0" title="${s.hint}" aria-label="${s.label}: ${s.value}. ${s.hint}" onclick="${s.action}" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); ${s.action}; }"` : ''}>
                 <div class="stat-icon ${s.color || ''}">${getStatIcon(s.icon)}</div>
                 <div class="stat-info">
                     <span class="stat-label">${s.label}</span>
@@ -1153,104 +1386,116 @@ async function showBlockDetail(height) {
             return;
         }
 
-        const inputs = block.inputs || [];
-        const outputs = block.outputs || [];
-        const kernels = block.kernels || [];
-
-        content.innerHTML = `
-            <div class="detail-header">
-                <div class="detail-icon">#</div>
-                <div class="detail-title">
-                    <h2>Block #${formatNumber(height)}</h2>
-                    <div class="subtitle">${formatTime(block.timestamp)}</div>
-                </div>
-            </div>
-
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <div class="detail-label">Height</div>
-                    <div class="detail-value">${formatNumber(height)}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Hash</div>
-                    <div class="detail-value"><span class="truncate" title="${hex(block.hash)}">${hex(block.hash)}</span> ${copyBtn(hex(block.hash))}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Previous Block</div>
-                    <div class="detail-value"><span class="hash truncate" onclick="showBlockDetail(${height-1})" title="${hex(block.prev)}">${hex(block.prev)}</span></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Difficulty</div>
-                    <div class="detail-value">${formatNumber(block.difficulty)}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Chainwork</div>
-                    <div class="detail-value">${esc(block.chainwork || '-')}</div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-label">Block Subsidy</div>
-                    <div class="detail-value">${formatBeam(block.subsidy || 0)} BEAM</div>
-                </div>
-                ${block.rate_usd ? `<div class="detail-item"><div class="detail-label">BEAM/USD Rate</div><div class="detail-value">$${esc(block.rate_usd)}</div></div>` : ''}
-            </div>
-
-            <div class="detail-section">
-                <h3>Inputs (${inputs.length})</h3>
-                ${inputs.length ? `
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead><tr><th>Type</th><th>Commitment</th><th>Value</th><th>Height</th><th>Maturity</th></tr></thead>
-                        <tbody>${inputs.map(i => `
-                            <tr onclick="${i.height ? `showBlockDetail(${int(i.height)})` : ''}">
-                                <td><span class="trade-type ${i.type === 'Coinbase' ? 'mint' : ''}">${esc(i.type || 'Regular')}</span></td>
-                                <td class="mono"><span class="truncate" title="${hex(i.commitment)}">${hex(i.commitment)}</span></td>
-                                <td class="mono">${i.Value ? formatBeam(i.Value) + ' BEAM' : '-'}</td>
-                                <td class="mono ${i.height ? 'hash' : ''}">${i.height ? formatNumber(i.height) : '-'}</td>
-                                <td class="mono">${i.Maturity ? formatNumber(i.Maturity) : '-'}</td>
-                            </tr>
-                        `).join('')}</tbody>
-                    </table>
-                </div>` : '<div class="loading-card">No inputs in this block</div>'}
-            </div>
-
-            <div class="detail-section">
-                <h3>Outputs (${outputs.length})</h3>
-                ${outputs.length ? `
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead><tr><th>Commitment</th><th>Asset Range</th><th>Spent</th></tr></thead>
-                        <tbody>${outputs.map(o => `
-                            <tr onclick="${o.spent ? `showBlockDetail(${int(o.spent)})` : ''}">
-                                <td class="mono"><span class="truncate" title="${hex(o.commitment)}">${hex(o.commitment)}</span></td>
-                                <td class="mono">${o.Asset ? `${int(o.Asset.min)}-${int(o.Asset.max)}` : '0'}</td>
-                                <td class="mono">${o.spent ? `<span class="hash">${formatNumber(o.spent)}</span>` : '<span style="color:var(--success)">Unspent</span>'}</td>
-                            </tr>
-                        `).join('')}</tbody>
-                    </table>
-                </div>` : '<div class="loading-card">No outputs in this block</div>'}
-            </div>
-
-            <div class="detail-section">
-                <h3>Kernels (${kernels.length})</h3>
-                ${kernels.length ? `
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead><tr><th>Kernel ID</th><th>Fee</th><th>Min Height</th><th>Max Height</th></tr></thead>
-                        <tbody>${kernels.map(k => `
-                            <tr>
-                                <td class="mono"><span class="truncate" title="${hex(k.id)}">${hex(k.id)}</span> ${copyBtn(hex(k.id))}</td>
-                                <td class="mono">${k.fee ? formatBeam(k.fee) + ' BEAM' : '0'}</td>
-                                <td class="mono">${formatNumber(k.minHeight || 0)}</td>
-                                <td class="mono">${formatNumber(k.maxHeight || 0)}</td>
-                            </tr>
-                        `).join('')}</tbody>
-                    </table>
-                </div>` : '<div class="loading-card">No kernels in this block</div>'}
-            </div>
-        `;
+        renderBlockDetail(block, height);
     } catch (e) {
         content.innerHTML = `<div class="loading-card">Error: ${esc(e.message)}</div>`;
     }
+}
+
+/**
+ * Fill Block Details from a /block response. Search passes the kernel it
+ * found, and that kernel's row is highlighted and scrolled into view.
+ */
+function renderBlockDetail(block, height, matchKernel = '') {
+    height = int(height);
+    showPageDirect('block-detail');
+    const content = document.getElementById('block-detail-content');
+    const inputs = block.inputs || [];
+    const outputs = block.outputs || [];
+    const kernels = block.kernels || [];
+
+    content.innerHTML = `
+        <div class="detail-header">
+            <div class="detail-icon">#</div>
+            <div class="detail-title">
+                <h2>Block #${formatNumber(height)}</h2>
+                <div class="subtitle">${formatTime(block.timestamp)}</div>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-item">
+                <div class="detail-label">Height</div>
+                <div class="detail-value">${formatNumber(height)}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Hash</div>
+                <div class="detail-value"><span class="truncate" title="${hex(block.hash)}">${hex(block.hash)}</span> ${copyBtn(hex(block.hash))}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Previous Block</div>
+                <div class="detail-value"><span class="hash truncate" onclick="showBlockDetail(${height-1})" title="${hex(block.prev)}">${hex(block.prev)}</span></div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Difficulty</div>
+                <div class="detail-value">${formatNumber(block.difficulty)}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Chainwork</div>
+                <div class="detail-value">${esc(block.chainwork || '-')}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Block Subsidy</div>
+                <div class="detail-value">${formatBeam(block.subsidy || 0)} BEAM</div>
+            </div>
+            ${block.rate_usd ? `<div class="detail-item"><div class="detail-label">BEAM/USD Rate</div><div class="detail-value">$${esc(block.rate_usd)}</div></div>` : ''}
+        </div>
+
+        <div class="detail-section">
+            <h3>Inputs (${inputs.length})</h3>
+            ${inputs.length ? `
+            <div class="table-container">
+                <table class="data-table">
+                    <thead><tr><th>Type</th><th>Commitment</th><th>Value</th><th>Height</th><th>Maturity</th></tr></thead>
+                    <tbody>${inputs.map(i => `
+                        <tr onclick="${i.height ? `showBlockDetail(${int(i.height)})` : ''}">
+                            <td><span class="trade-type ${i.type === 'Coinbase' ? 'mint' : ''}">${esc(i.type || 'Regular')}</span></td>
+                            <td class="mono"><span class="truncate" title="${hex(i.commitment)}">${hex(i.commitment)}</span></td>
+                            <td class="mono">${i.Value ? formatBeam(i.Value) + ' BEAM' : '-'}</td>
+                            <td class="mono ${i.height ? 'hash' : ''}">${i.height ? formatNumber(i.height) : '-'}</td>
+                            <td class="mono">${i.Maturity ? formatNumber(i.Maturity) : '-'}</td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            </div>` : '<div class="loading-card">No inputs in this block</div>'}
+        </div>
+
+        <div class="detail-section">
+            <h3>Outputs (${outputs.length})</h3>
+            ${outputs.length ? `
+            <div class="table-container">
+                <table class="data-table">
+                    <thead><tr><th>Commitment</th><th>Asset Range</th><th>Spent</th></tr></thead>
+                    <tbody>${outputs.map(o => `
+                        <tr onclick="${o.spent ? `showBlockDetail(${int(o.spent)})` : ''}">
+                            <td class="mono"><span class="truncate" title="${hex(o.commitment)}">${hex(o.commitment)}</span></td>
+                            <td class="mono">${o.Asset ? `${int(o.Asset.min)}-${int(o.Asset.max)}` : '0'}</td>
+                            <td class="mono">${o.spent ? `<span class="hash">${formatNumber(o.spent)}</span>` : '<span style="color:var(--success)">Unspent</span>'}</td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            </div>` : '<div class="loading-card">No outputs in this block</div>'}
+        </div>
+
+        <div class="detail-section">
+            <h3>Kernels (${kernels.length})</h3>
+            ${kernels.length ? `
+            <div class="table-container">
+                <table class="data-table">
+                    <thead><tr><th>Kernel ID</th><th>Fee</th><th>Min Height</th><th>Max Height</th></tr></thead>
+                    <tbody>${kernels.map(k => `
+                        <tr${matchKernel && hex(k.id).toLowerCase() === matchKernel ? ' class="row-match"' : ''}>
+                            <td class="mono"><span class="truncate" title="${hex(k.id)}">${hex(k.id)}</span> ${copyBtn(hex(k.id))}</td>
+                            <td class="mono">${k.fee ? formatBeam(k.fee) + ' BEAM' : '0'}</td>
+                            <td class="mono">${formatNumber(k.minHeight || 0)}</td>
+                            <td class="mono">${formatNumber(k.maxHeight || 0)}</td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            </div>` : '<div class="loading-card">No kernels in this block</div>'}
+        </div>
+    `;
+    if (matchKernel) content.querySelector('tr.row-match')?.scrollIntoView({ block: 'center' });
 }
 
 // ==================== ASSETS ====================
