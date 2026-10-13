@@ -114,7 +114,6 @@ The explorer supports multiple BEAM API nodes:
 | Node | URL |
 |------|-----|
 | explorer.0xmx.net | `https://explorer.0xmx.net/api` |
-| explorer-api.beamprivacy.com | `https://explorer-api.beamprivacy.com` |
 | BeamSmart.net | `https://BeamSmart.net:8000` |
 | **Custom** | Enter any compatible API URL |
 

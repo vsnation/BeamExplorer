@@ -533,7 +533,6 @@ a:hover { color: var(--accent-secondary); }
                         <span class="node-status" id="nodeStatus"></span>
                         <select id="nodeSelect" onchange="changeNode()">
                             <option value="https://explorer.0xmx.net/api">explorer.0xmx.net</option>
-                            <option value="https://explorer-api.beamprivacy.com">explorer-api.beamprivacy.com</option>
                             <option value="https://BeamSmart.net:8000">BeamSmart.net</option>
                             <option value="custom">Custom Node...</option>
                         </select>
@@ -984,13 +983,13 @@ async function loadStatus() {
         // Build comprehensive stats grid
         const stats = [
             { label: 'Block Height', value: formatNumber(status.height), icon: 'blocks' },
-            { label: 'Peers Connected', value: status.peers_count || 0, icon: 'peers', color: 'purple' },
+            { label: 'Peers Connected', value: formatNumber(int(status.peers_count)), icon: 'peers', color: 'purple' },
             { label: 'Chainwork', value: formatLargeNumber(cleanNumber(status.chainwork)), icon: 'chain', color: 'cyan' },
             { label: 'Shielded Outs (24h)', value: formatNumber(status.shielded_outputs_per_24h || 0), icon: 'shield', color: 'orange' },
             { label: 'Total Shielded Outs', value: formatNumber(status.shielded_outputs_total || 0), icon: 'shield-total' },
             { label: 'Shielded Ready (hrs)', value: formatNumber(Math.round(status.shielded_possible_ready_in_hours || 0)), icon: 'time', color: 'yellow' },
             { label: 'Last Block', value: formatTime(status.timestamp), icon: 'clock', color: 'purple' },
-            { label: 'Block Hash', value: `${(status.hash || '').slice(0,8)}...`, icon: 'hash', color: 'cyan' },
+            { label: 'Block Hash', value: `${hex(status.hash).slice(0,8)}...`, icon: 'hash', color: 'cyan' },
         ];
 
         statsGrid.innerHTML = stats.map(s => `
@@ -1011,7 +1010,7 @@ async function loadStatus() {
     } catch (e) {
         console.error('Status error:', e);
         document.getElementById('nodeStatus').classList.remove('connected');
-        statsGrid.innerHTML = `<div class="loading-card">Error loading stats: ${e.message}</div>`;
+        statsGrid.innerHTML = `<div class="loading-card">Error loading stats: ${esc(e.message)}</div>`;
     }
 }
 
@@ -1060,7 +1059,7 @@ async function loadRecentBlocks() {
         }
 
         tbody.innerHTML = rows.map(b => `
-            <tr onclick="showBlockDetail(${b.Height})">
+            <tr onclick="showBlockDetail(${int(b.Height)})">
                 <td><span class="mono hash">${formatNumber(b.Height)}</span></td>
                 <td><span class="time">${formatTime(b.Timestamp)}</span></td>
                 <td>${formatNumber(cleanNumber(b.Txs))}</td>
@@ -1071,7 +1070,7 @@ async function loadRecentBlocks() {
         `).join('');
     } catch (e) {
         console.error('Load recent blocks error:', e);
-        tbody.innerHTML = `<tr><td colspan="6" class="empty">Error: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="empty">Error: ${esc(e.message)}</td></tr>`;
     }
 }
 
@@ -1097,7 +1096,7 @@ async function loadBlocks(append = false) {
         // Parse headers from response
         if (data.value && data.value[0]) {
             blockHeaders = data.value[0].map(h => parseTableValue(h) || String(h));
-            headerRow.innerHTML = `<tr>${blockHeaders.map(h => `<th>${h}</th>`).join('')}</tr>`;
+            headerRow.innerHTML = `<tr>${blockHeaders.map(h => `<th>${esc(h)}</th>`).join('')}</tr>`;
         }
 
         const rows = parseTableRows(data);
@@ -1109,11 +1108,11 @@ async function loadBlocks(append = false) {
         }
 
         const html = rows.map(b => {
-            return `<tr onclick="showBlockDetail(${b.Height})">${blockHeaders.map(h => {
+            return `<tr onclick="showBlockDetail(${int(b.Height)})">${blockHeaders.map(h => {
                 let val = b[h];
                 if (h === 'Height') return `<td><span class="mono hash">${formatNumber(val)}</span></td>`;
                 if (h === 'Timestamp') return `<td><span class="time">${formatTime(val)}</span></td>`;
-                if (h === 'Hash') return `<td class="mono"><span class="truncate hash" title="${val}">${val?.slice(0,12)}...</span></td>`;
+                if (h === 'Hash') return `<td class="mono"><span class="truncate hash" title="${hex(val)}">${hex(val).slice(0,12)}...</span></td>`;
                 if (h === 'Fee' || h === 'T.Fee') return `<td class="mono">${formatBeam(val || 0)}</td>`;
                 if (h === 'Chainwork') return `<td class="mono">${formatLargeNumber(cleanNumber(val))}</td>`;
                 if (h.includes('Size')) return `<td class="mono">${formatBytes(cleanNumber(val))}</td>`;
@@ -1127,11 +1126,11 @@ async function loadBlocks(append = false) {
             tbody.innerHTML = html;
         }
 
-        blocksLoadedUntil = rows[rows.length - 1].Height;
+        blocksLoadedUntil = int(rows[rows.length - 1].Height);
         btn.style.display = (data.more && blocksLoadedUntil > 1) ? 'block' : 'none';
     } catch (e) {
         console.error('Load blocks error:', e);
-        if (!append) tbody.innerHTML = `<tr><td colspan="15" class="empty">Error: ${e.message}</td></tr>`;
+        if (!append) tbody.innerHTML = `<tr><td colspan="15" class="empty">Error: ${esc(e.message)}</td></tr>`;
     } finally {
         btn.disabled = false;
         btn.textContent = 'Load More Blocks';
@@ -1141,6 +1140,7 @@ async function loadBlocks(append = false) {
 function loadMoreBlocks() { loadBlocks(true); }
 
 async function showBlockDetail(height) {
+    height = int(height);
     showPageDirect('block-detail');
     const content = document.getElementById('block-detail-content');
     content.innerHTML = '<div class="loading-card"><span class="spinner"></span>Loading block...</div>';
@@ -1173,11 +1173,11 @@ async function showBlockDetail(height) {
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Hash</div>
-                    <div class="detail-value"><span class="truncate" title="${block.hash}">${block.hash}</span> ${copyBtn(block.hash)}</div>
+                    <div class="detail-value"><span class="truncate" title="${hex(block.hash)}">${hex(block.hash)}</span> ${copyBtn(hex(block.hash))}</div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Previous Block</div>
-                    <div class="detail-value"><span class="hash truncate" onclick="showBlockDetail(${height-1})" title="${block.prev}">${block.prev}</span></div>
+                    <div class="detail-value"><span class="hash truncate" onclick="showBlockDetail(${height-1})" title="${hex(block.prev)}">${hex(block.prev)}</span></div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Difficulty</div>
@@ -1185,13 +1185,13 @@ async function showBlockDetail(height) {
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Chainwork</div>
-                    <div class="detail-value">${block.chainwork || '-'}</div>
+                    <div class="detail-value">${esc(block.chainwork || '-')}</div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Block Subsidy</div>
                     <div class="detail-value">${formatBeam(block.subsidy || 0)} BEAM</div>
                 </div>
-                ${block.rate_usd ? `<div class="detail-item"><div class="detail-label">BEAM/USD Rate</div><div class="detail-value">$${block.rate_usd}</div></div>` : ''}
+                ${block.rate_usd ? `<div class="detail-item"><div class="detail-label">BEAM/USD Rate</div><div class="detail-value">$${esc(block.rate_usd)}</div></div>` : ''}
             </div>
 
             <div class="detail-section">
@@ -1201,9 +1201,9 @@ async function showBlockDetail(height) {
                     <table class="data-table">
                         <thead><tr><th>Type</th><th>Commitment</th><th>Value</th><th>Height</th><th>Maturity</th></tr></thead>
                         <tbody>${inputs.map(i => `
-                            <tr onclick="${i.height ? `showBlockDetail(${i.height})` : ''}">
-                                <td><span class="trade-type ${i.type === 'Coinbase' ? 'mint' : ''}">${i.type || 'Regular'}</span></td>
-                                <td class="mono"><span class="truncate" title="${i.commitment}">${i.commitment}</span></td>
+                            <tr onclick="${i.height ? `showBlockDetail(${int(i.height)})` : ''}">
+                                <td><span class="trade-type ${i.type === 'Coinbase' ? 'mint' : ''}">${esc(i.type || 'Regular')}</span></td>
+                                <td class="mono"><span class="truncate" title="${hex(i.commitment)}">${hex(i.commitment)}</span></td>
                                 <td class="mono">${i.Value ? formatBeam(i.Value) + ' BEAM' : '-'}</td>
                                 <td class="mono ${i.height ? 'hash' : ''}">${i.height ? formatNumber(i.height) : '-'}</td>
                                 <td class="mono">${i.Maturity ? formatNumber(i.Maturity) : '-'}</td>
@@ -1220,9 +1220,9 @@ async function showBlockDetail(height) {
                     <table class="data-table">
                         <thead><tr><th>Commitment</th><th>Asset Range</th><th>Spent</th></tr></thead>
                         <tbody>${outputs.map(o => `
-                            <tr onclick="${o.spent ? `showBlockDetail(${o.spent})` : ''}">
-                                <td class="mono"><span class="truncate" title="${o.commitment}">${o.commitment}</span></td>
-                                <td class="mono">${o.Asset ? `${o.Asset.min}-${o.Asset.max}` : '0'}</td>
+                            <tr onclick="${o.spent ? `showBlockDetail(${int(o.spent)})` : ''}">
+                                <td class="mono"><span class="truncate" title="${hex(o.commitment)}">${hex(o.commitment)}</span></td>
+                                <td class="mono">${o.Asset ? `${int(o.Asset.min)}-${int(o.Asset.max)}` : '0'}</td>
                                 <td class="mono">${o.spent ? `<span class="hash">${formatNumber(o.spent)}</span>` : '<span style="color:var(--success)">Unspent</span>'}</td>
                             </tr>
                         `).join('')}</tbody>
@@ -1238,7 +1238,7 @@ async function showBlockDetail(height) {
                         <thead><tr><th>Kernel ID</th><th>Fee</th><th>Min Height</th><th>Max Height</th></tr></thead>
                         <tbody>${kernels.map(k => `
                             <tr>
-                                <td class="mono"><span class="truncate" title="${k.id}">${k.id}</span> ${copyBtn(k.id)}</td>
+                                <td class="mono"><span class="truncate" title="${hex(k.id)}">${hex(k.id)}</span> ${copyBtn(hex(k.id))}</td>
                                 <td class="mono">${k.fee ? formatBeam(k.fee) + ' BEAM' : '0'}</td>
                                 <td class="mono">${formatNumber(k.minHeight || 0)}</td>
                                 <td class="mono">${formatNumber(k.maxHeight || 0)}</td>
@@ -1249,7 +1249,7 @@ async function showBlockDetail(height) {
             </div>
         `;
     } catch (e) {
-        content.innerHTML = `<div class="loading-card">Error: ${e.message}</div>`;
+        content.innerHTML = `<div class="loading-card">Error: ${esc(e.message)}</div>`;
     }
 }
 
@@ -1269,7 +1269,7 @@ async function loadAssets() {
         renderAssets(assetsData);
     } catch (e) {
         console.error('Load assets error:', e);
-        container.innerHTML = `<div class="loading-card">Error: ${e.message}</div>`;
+        container.innerHTML = `<div class="loading-card">Error: ${esc(e.message)}</div>`;
     }
 }
 
@@ -1285,14 +1285,14 @@ function renderAssets(assets) {
         const name = meta.N || `Asset ${a.Aid}`;
         const decimals = getDecimals(meta.NTHUN);
         return `
-            <div class="card" onclick="showAssetDetail(${a.Aid})">
+            <div class="card" onclick="showAssetDetail(${int(a.Aid)})">
                 <div class="card-header">
-                    <div class="card-icon">${symbol.slice(0,2).toUpperCase()}</div>
+                    <div class="card-icon">${esc(symbol.slice(0,2).toUpperCase())}</div>
                     <div class="card-title">
                         <h4>${esc(name)}</h4>
                         <span class="subtitle">${esc(symbol)}</span>
                     </div>
-                    <span class="card-badge">ID: ${a.Aid}</span>
+                    <span class="card-badge">ID: ${int(a.Aid)}</span>
                 </div>
                 <div class="card-stats">
                     <div class="card-stat">
@@ -1321,6 +1321,7 @@ function filterAssets() {
 }
 
 async function showAssetDetail(id) {
+    id = int(id);
     showPageDirect('asset-detail');
     const content = document.getElementById('asset-detail-content');
     content.innerHTML = '<div class="loading-card"><span class="spinner"></span>Loading asset...</div>';
@@ -1358,33 +1359,33 @@ async function showAssetDetail(id) {
                                 const rate = p['Rate 1:2'] || '';
                                 const otherAssetId = p.Aid1 == id ? p.Aid2 : p.Aid1;
                                 return `
-                                    <div class="card" onclick="showAssetDetail(${otherAssetId})">
+                                    <div class="card" onclick="showAssetDetail(${int(otherAssetId)})">
                                         <div class="pool-pair">
                                             <div class="pool-pair-icons">
-                                                <div class="card-icon">${a1.symbol.slice(0,2)}</div>
-                                                <div class="card-icon">${a2.symbol.slice(0,2)}</div>
+                                                <div class="card-icon">${esc(a1.symbol.slice(0,2))}</div>
+                                                <div class="card-icon">${esc(a2.symbol.slice(0,2))}</div>
                                             </div>
-                                            <span class="pool-pair-name">${a1.symbol} / ${a2.symbol}</span>
-                                            <span class="volatility-badge ${vol}">${p.Volatility || 'High'}</span>
+                                            <span class="pool-pair-name">${esc(a1.symbol)} / ${esc(a2.symbol)}</span>
+                                            <span class="volatility-badge ${esc(vol)}">${esc(p.Volatility || 'High')}</span>
                                         </div>
                                         <div class="pool-stats">
                                             <div class="pool-stat">
-                                                <div class="pool-stat-label">${a1.symbol} Reserve</div>
+                                                <div class="pool-stat-label">${esc(a1.symbol)} Reserve</div>
                                                 <div class="pool-stat-value">${formatAsset(p['Amount1'] || 0, a1.decimals)}</div>
                                             </div>
                                             <div class="pool-stat">
-                                                <div class="pool-stat-label">${a2.symbol} Reserve</div>
+                                                <div class="pool-stat-label">${esc(a2.symbol)} Reserve</div>
                                                 <div class="pool-stat-value">${formatAsset(p['Amount2'] || 0, a2.decimals)}</div>
                                             </div>
                                             <div class="pool-stat">
                                                 <div class="pool-stat-label">LP Token ID</div>
-                                                <div class="pool-stat-value">#${p['LP-Token'] || 'N/A'}</div>
+                                                <div class="pool-stat-value">#${esc(p['LP-Token'] || 'N/A')}</div>
                                             </div>
                                             <div class="pool-stat">
                                                 <div class="pool-stat-label">LP Supply</div>
                                                 <div class="pool-stat-value">${formatAsset(p['Amount-LP-Token'] || 0, 8)}</div>
                                             </div>
-                                            ${rate ? `<div class="pool-stat full-width"><div class="pool-stat-label">Rate</div><div class="pool-stat-value">1 ${a2.symbol} = ${rate} ${a1.symbol}</div></div>` : ''}
+                                            ${rate ? `<div class="pool-stat full-width"><div class="pool-stat-label">Rate</div><div class="pool-stat-value">1 ${esc(a2.symbol)} = ${esc(rate)} ${esc(a1.symbol)}</div></div>` : ''}
                                         </div>
                                     </div>
                                 `;
@@ -1397,7 +1398,7 @@ async function showAssetDetail(id) {
 
         content.innerHTML = `
             <div class="detail-header">
-                <div class="detail-icon">${symbol.slice(0,2).toUpperCase()}</div>
+                <div class="detail-icon">${esc(symbol.slice(0,2).toUpperCase())}</div>
                 <div class="detail-title">
                     <h2>${esc(name)}</h2>
                     <div class="subtitle">${esc(symbol)} (Asset ID: ${id})</div>
@@ -1407,7 +1408,7 @@ async function showAssetDetail(id) {
             <div class="detail-grid">
                 <div class="detail-item">
                     <div class="detail-label">Total Supply</div>
-                    <div class="detail-value">${formatAsset(resp.value || 0, decimals)} ${symbol}</div>
+                    <div class="detail-value">${formatAsset(resp.value || 0, decimals)} ${esc(symbol)}</div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Decimals</div>
@@ -1419,7 +1420,7 @@ async function showAssetDetail(id) {
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Owner Contract</div>
-                    <div class="detail-value">${resp.owner ? `<span class="hash truncate" onclick="showContractDetail('${resp.owner}')" title="${resp.owner}">${resp.owner.slice(0,12)}...${resp.owner.slice(-8)}</span>` : 'None'}</div>
+                    <div class="detail-value">${hex(resp.owner) ? `<span class="hash truncate" onclick="showContractDetail('${hex(resp.owner)}')" title="${hex(resp.owner)}">${hex(resp.owner).slice(0,12)}...${hex(resp.owner).slice(-8)}</span>` : 'None'}</div>
                 </div>
                 ${meta.OPT_SITE_URL ? `<div class="detail-item"><div class="detail-label">Website</div><div class="detail-value"><a href="${esc(safeUrl(meta.OPT_SITE_URL))}" target="_blank" rel="noopener noreferrer">${esc(meta.OPT_SITE_URL.slice(0,40))}...</a></div></div>` : ''}
             </div>
@@ -1431,10 +1432,10 @@ async function showAssetDetail(id) {
                     <table class="data-table">
                         <thead><tr><th>Location</th><th>Type</th><th>Amount</th></tr></thead>
                         <tbody>${distribution.map(d => `
-                            <tr ${d.Cid ? `onclick="showContractDetail('${d.Cid}')"` : 'style="cursor:default"'}>
-                                <td class="mono">${d.Cid ? `<span class="hash truncate" title="${d.Cid}">${d.Cid.slice(0,12)}...${d.Cid.slice(-8)}</span>` : 'Unlocked'}</td>
-                                <td>${d.Kind || '-'}</td>
-                                <td class="mono">${formatAsset(d['Locked Value'] || 0, decimals)} ${symbol}</td>
+                            <tr ${hex(d.Cid) ? `onclick="showContractDetail('${hex(d.Cid)}')"` : 'style="cursor:default"'}>
+                                <td class="mono">${hex(d.Cid) ? `<span class="hash truncate" title="${hex(d.Cid)}">${hex(d.Cid).slice(0,12)}...${hex(d.Cid).slice(-8)}</span>` : 'Unlocked'}</td>
+                                <td>${esc(d.Kind || '-')}</td>
+                                <td class="mono">${formatAsset(d['Locked Value'] || 0, decimals)} ${esc(symbol)}</td>
                             </tr>
                         `).join('')}</tbody>
                     </table>
@@ -1450,9 +1451,9 @@ async function showAssetDetail(id) {
                     <table class="data-table">
                         <thead><tr><th>Block</th><th>Event</th><th>Amount</th><th>Total Supply</th></tr></thead>
                         <tbody>${history.map(h => `
-                            <tr onclick="showBlockDetail(${h.Height})">
+                            <tr onclick="showBlockDetail(${int(h.Height)})">
                                 <td><span class="mono hash">${formatNumber(h.Height)}</span></td>
-                                <td><span class="trade-type ${h.Event === 'Mint' ? 'mint' : h.Event === 'Burn' ? 'burn' : 'create'}">${h.Event}</span></td>
+                                <td><span class="trade-type ${h.Event === 'Mint' ? 'mint' : h.Event === 'Burn' ? 'burn' : 'create'}">${esc(h.Event)}</span></td>
                                 <td class="mono ${String(h.Amount || '').includes('+') ? 'amount-positive' : String(h.Amount || '').includes('-') ? 'amount-negative' : ''}">${h.Amount ? formatAsset(parseAmount(h.Amount), decimals) : '-'}</td>
                                 <td class="mono">${h['Total Amount'] != null ? formatAsset(h['Total Amount'], decimals) : '-'}</td>
                             </tr>
@@ -1462,7 +1463,7 @@ async function showAssetDetail(id) {
             </div>` : ''}
         `;
     } catch (e) {
-        content.innerHTML = `<div class="loading-card">Error: ${e.message}</div>`;
+        content.innerHTML = `<div class="loading-card">Error: ${esc(e.message)}</div>`;
     }
 }
 
@@ -1508,39 +1509,39 @@ async function loadPools() {
             const rate = p['Rate 1:2'] || '';
 
             return `
-                <div class="card" onclick="showAssetDetail(${p.Aid2})">
+                <div class="card" onclick="showAssetDetail(${int(p.Aid2)})">
                     <div class="pool-pair">
                         <div class="pool-pair-icons">
-                            <div class="card-icon">${a1.symbol.slice(0,2)}</div>
-                            <div class="card-icon">${a2.symbol.slice(0,2)}</div>
+                            <div class="card-icon">${esc(a1.symbol.slice(0,2))}</div>
+                            <div class="card-icon">${esc(a2.symbol.slice(0,2))}</div>
                         </div>
-                        <span class="pool-pair-name">${a1.symbol} / ${a2.symbol}</span>
-                        <span class="volatility-badge ${vol}">${p.Volatility || 'High'}</span>
+                        <span class="pool-pair-name">${esc(a1.symbol)} / ${esc(a2.symbol)}</span>
+                        <span class="volatility-badge ${esc(vol)}">${esc(p.Volatility || 'High')}</span>
                     </div>
                     <div class="pool-stats">
                         <div class="pool-stat">
-                            <div class="pool-stat-label">${a1.symbol} Reserve</div>
+                            <div class="pool-stat-label">${esc(a1.symbol)} Reserve</div>
                             <div class="pool-stat-value">${formatAsset(p['Amount1'] || 0, a1.decimals)}</div>
                         </div>
                         <div class="pool-stat">
-                            <div class="pool-stat-label">${a2.symbol} Reserve</div>
+                            <div class="pool-stat-label">${esc(a2.symbol)} Reserve</div>
                             <div class="pool-stat-value">${formatAsset(p['Amount2'] || 0, a2.decimals)}</div>
                         </div>
                         <div class="pool-stat">
                             <div class="pool-stat-label">LP Token ID</div>
-                            <div class="pool-stat-value">#${p['LP-Token'] || 'N/A'}</div>
+                            <div class="pool-stat-value">#${esc(p['LP-Token'] || 'N/A')}</div>
                         </div>
                         <div class="pool-stat">
                             <div class="pool-stat-label">LP Supply</div>
                             <div class="pool-stat-value">${formatAsset(p['Amount-LP-Token'] || 0, 8)}</div>
                         </div>
-                        ${rate ? `<div class="pool-stat full-width"><div class="pool-stat-label">Rate</div><div class="pool-stat-value">1 ${a2.symbol} = ${rate} ${a1.symbol}</div></div>` : ''}
+                        ${rate ? `<div class="pool-stat full-width"><div class="pool-stat-label">Rate</div><div class="pool-stat-value">1 ${esc(a2.symbol)} = ${esc(rate)} ${esc(a1.symbol)}</div></div>` : ''}
                     </div>
                 </div>
             `;
         }).join('');
     } catch (e) {
-        container.innerHTML = `<div class="loading-card">Error: ${e.message}</div>`;
+        container.innerHTML = `<div class="loading-card">Error: ${esc(e.message)}</div>`;
     }
 }
 
@@ -1613,11 +1614,11 @@ async function loadTrades(append = false) {
             const typeClass = t.kind === 'Trade' ? 'trade' : t.kind === 'Withdraw' ? 'withdraw' : 'liquidity';
 
             return `
-                <tr onclick="showBlockDetail(${t.height})">
+                <tr onclick="showBlockDetail(${int(t.height)})">
                     <td><span class="mono hash">${formatNumber(t.height)}</span></td>
-                    <td><span class="trade-type ${typeClass}">${t.kind}</span></td>
-                    <td>${inAsset.symbol}</td>
-                    <td>${outAsset.symbol}</td>
+                    <td><span class="trade-type ${typeClass}">${esc(t.kind)}</span></td>
+                    <td>${esc(inAsset.symbol)}</td>
+                    <td>${esc(outAsset.symbol)}</td>
                     <td class="mono amount-negative">-${formatAsset(inAmt, inAsset.decimals)}</td>
                     <td class="mono amount-positive">+${formatAsset(outAmt, outAsset.decimals)}</td>
                 </tr>
@@ -1632,7 +1633,7 @@ async function loadTrades(append = false) {
 
         btn.style.display = history.more ? 'block' : 'none';
     } catch (e) {
-        if (!append) tbody.innerHTML = `<tr><td colspan="6" class="empty">Error: ${e.message}</td></tr>`;
+        if (!append) tbody.innerHTML = `<tr><td colspan="6" class="empty">Error: ${esc(e.message)}</td></tr>`;
     } finally {
         btn.disabled = false;
     }
@@ -1656,7 +1657,7 @@ async function loadContracts() {
         contractsData = resp.value.slice(1);
         renderContracts(contractsData);
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty">Error: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="empty">Error: ${esc(e.message)}</td></tr>`;
     }
 }
 
@@ -1669,7 +1670,7 @@ function renderContracts(contracts) {
     }
 
     tbody.innerHTML = contracts.map(row => {
-        const cid = parseTableValue(row[0]);
+        const cid = hex(parseTableValue(row[0]));
         const kind = typeof row[1] === 'string' ? row[1] : '-';
         const deployHeight = typeof row[2] === 'number' ? row[2] : parseTableValue(row[2]) || '-';
         const locked = row[3];
@@ -1685,7 +1686,7 @@ function renderContracts(contracts) {
             <tr onclick="showContractDetail('${cid}')">
                 <td class="mono"><span class="hash truncate" title="${cid}">${cid?.slice(0,12)}...${cid?.slice(-8)}</span></td>
                 <td>${esc(String(kind))}</td>
-                <td class="mono">${typeof deployHeight === 'number' ? formatNumber(deployHeight) : deployHeight}</td>
+                <td class="mono">${typeof deployHeight === 'number' ? formatNumber(deployHeight) : esc(deployHeight)}</td>
                 <td>${lockedDisplay}</td>
                 <td>${ownedDisplay}</td>
             </tr>
@@ -1704,6 +1705,7 @@ function filterContracts() {
 }
 
 async function showContractDetail(cid) {
+    cid = hex(cid);
     showPageDirect('contract-detail');
     const content = document.getElementById('contract-detail-content');
     content.innerHTML = '<div class="loading-card"><span class="spinner"></span>Loading contract...</div>';
@@ -1726,12 +1728,12 @@ async function showContractDetail(cid) {
                         <table class="data-table">
                             <thead><tr><th>Asset</th><th>Amount</th></tr></thead>
                             <tbody>${rows.map(r => {
-                                const aid = parseTableValue(r[0]);
+                                const aid = int(parseTableValue(r[0]));
                                 const amount = parseTableValue(r[1]);
                                 const asset = getAsset(aid);
                                 return `
                                     <tr onclick="showAssetDetail(${aid})">
-                                        <td><span class="hash">${asset.symbol} (ID: ${aid})</span></td>
+                                        <td><span class="hash">${esc(asset.symbol)} (ID: ${aid})</span></td>
                                         <td class="mono">${formatAsset(amount || 0, asset.decimals)}</td>
                                     </tr>
                                 `;
@@ -1754,12 +1756,12 @@ async function showContractDetail(cid) {
                         <table class="data-table">
                             <thead><tr><th>Asset ID</th><th>Supply</th></tr></thead>
                             <tbody>${rows.map(r => {
-                                const aid = parseTableValue(r[0]);
+                                const aid = int(parseTableValue(r[0]));
                                 const supply = parseTableValue(r[1]);
                                 const asset = getAsset(aid);
                                 return `
                                     <tr onclick="showAssetDetail(${aid})">
-                                        <td><span class="hash">${asset.symbol} (ID: ${aid})</span></td>
+                                        <td><span class="hash">${esc(asset.symbol)} (ID: ${aid})</span></td>
                                         <td class="mono">${formatAsset(supply || 0, asset.decimals)}</td>
                                     </tr>
                                 `;
@@ -1794,9 +1796,9 @@ async function showContractDetail(cid) {
                             <table class="data-table">
                                 <thead><tr><th>Block</th><th>Action</th></tr></thead>
                                 <tbody>${calls.slice(0, 50).map(c => `
-                                    <tr onclick="showBlockDetail(${c.height})">
+                                    <tr onclick="showBlockDetail(${int(c.height)})">
                                         <td><span class="mono hash">${formatNumber(c.height)}</span></td>
-                                        <td><span class="trade-type ${c.kind === 'Trade' ? 'trade' : c.kind === 'Withdraw' ? 'withdraw' : String(c.kind).includes('Liquidity') ? 'liquidity' : ''}">${c.kind}</span></td>
+                                        <td><span class="trade-type ${c.kind === 'Trade' ? 'trade' : c.kind === 'Withdraw' ? 'withdraw' : String(c.kind).includes('Liquidity') ? 'liquidity' : ''}">${esc(c.kind)}</span></td>
                                     </tr>
                                 `).join('')}</tbody>
                             </table>
@@ -1820,17 +1822,17 @@ async function showContractDetail(cid) {
                             const a1 = getAsset(p.Aid1);
                             const a2 = getAsset(p.Aid2);
                             return `
-                                <div class="card" onclick="showAssetDetail(${p.Aid2})">
+                                <div class="card" onclick="showAssetDetail(${int(p.Aid2)})">
                                     <div class="pool-pair">
                                         <div class="pool-pair-icons">
-                                            <div class="card-icon">${a1.symbol.slice(0,2)}</div>
-                                            <div class="card-icon">${a2.symbol.slice(0,2)}</div>
+                                            <div class="card-icon">${esc(a1.symbol.slice(0,2))}</div>
+                                            <div class="card-icon">${esc(a2.symbol.slice(0,2))}</div>
                                         </div>
-                                        <span class="pool-pair-name">${a1.symbol}/${a2.symbol}</span>
+                                        <span class="pool-pair-name">${esc(a1.symbol)}/${esc(a2.symbol)}</span>
                                     </div>
                                     <div class="pool-stats">
-                                        <div class="pool-stat"><div class="pool-stat-label">${a1.symbol}</div><div class="pool-stat-value">${formatAsset(p['Amount1'] || 0, a1.decimals)}</div></div>
-                                        <div class="pool-stat"><div class="pool-stat-label">${a2.symbol}</div><div class="pool-stat-value">${formatAsset(p['Amount2'] || 0, a2.decimals)}</div></div>
+                                        <div class="pool-stat"><div class="pool-stat-label">${esc(a1.symbol)}</div><div class="pool-stat-value">${formatAsset(p['Amount1'] || 0, a1.decimals)}</div></div>
+                                        <div class="pool-stat"><div class="pool-stat-label">${esc(a2.symbol)}</div><div class="pool-stat-value">${formatAsset(p['Amount2'] || 0, a2.decimals)}</div></div>
                                     </div>
                                 </div>
                             `;
@@ -1870,7 +1872,7 @@ async function showContractDetail(cid) {
             ${historyHtml}
         `;
     } catch (e) {
-        content.innerHTML = `<div class="loading-card">Error: ${e.message}</div>`;
+        content.innerHTML = `<div class="loading-card">Error: ${esc(e.message)}</div>`;
     }
 }
 
@@ -1909,12 +1911,12 @@ async function loadSwapTotals() {
                 <div class="swap-coin-card">
                     <div class="swap-coin-icon ${c.icon}">${c.name.slice(0,2).toUpperCase()}</div>
                     <div class="swap-coin-name">${c.name}</div>
-                    <div class="swap-coin-amount">${totals[c.key] || '0'} offered</div>
+                    <div class="swap-coin-amount">${esc(totals[c.key] || '0')} offered</div>
                 </div>
             `).join('')}
         `;
     } catch (e) {
-        grid.innerHTML = `<div class="loading-card">Error: ${e.message}</div>`;
+        grid.innerHTML = `<div class="loading-card">Error: ${esc(e.message)}</div>`;
     }
 }
 
@@ -1930,16 +1932,16 @@ async function loadSwapOffers() {
 
         tbody.innerHTML = offers.map(o => `
             <tr>
-                <td class="mono"><span class="truncate">${o.id || '-'}</span></td>
-                <td>${o.send_currency || '-'} ${o.send_amount || ''}</td>
-                <td>${o.receive_currency || '-'} ${o.receive_amount || ''}</td>
-                <td class="mono">${o.rate || '-'}</td>
-                <td class="mono">${o.min_amount || '-'}</td>
-                <td><span class="trade-type trade">${o.status || 'Active'}</span></td>
+                <td class="mono"><span class="truncate">${esc(o.id || '-')}</span></td>
+                <td>${esc(o.send_currency || '-')} ${esc(o.send_amount || '')}</td>
+                <td>${esc(o.receive_currency || '-')} ${esc(o.receive_amount || '')}</td>
+                <td class="mono">${esc(o.rate || '-')}</td>
+                <td class="mono">${esc(o.min_amount || '-')}</td>
+                <td><span class="trade-type trade">${esc(o.status || 'Active')}</span></td>
             </tr>
         `).join('');
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="6" class="empty">Error: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="empty">Error: ${esc(e.message)}</td></tr>`;
     }
 }
 
@@ -2022,6 +2024,18 @@ function esc(s) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+/** A whole number (block height, asset id, count), or 0. */
+function int(v) {
+    const n = Number(String(v == null ? '' : v).replace(/,/g, ''));
+    return Number.isFinite(n) ? Math.trunc(n) : 0;
+}
+
+/** A hex string (hash, commitment, kernel or contract id), or ''. */
+function hex(v) {
+    const s = String(v == null ? '' : v);
+    return /^[0-9a-f]+$/i.test(s) ? s : '';
 }
 
 /**
