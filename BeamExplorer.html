@@ -1961,7 +1961,15 @@ function formatBytes(b) {
     if (b >= 1e3) return (b / 1e3).toFixed(2) + ' KB';
     return b + ' B';
 }
-function formatBeam(groth) { return (Number(groth) / 1e8).toFixed(8); }
+/**
+ * A BEAM amount for display. Legacy queries send groth as a number; queries
+ * with exp_am=1 send BEAM as a formatted decimal string ("24,611.55505511"),
+ * which is shown as given rather than divided by 1e8 a second time.
+ */
+function formatBeam(v) {
+    if (typeof v === 'string') return /^[+-]?[\d,]+(\.\d+)?$/.test(v) ? v : '-';
+    return (Number(v) / 1e8).toFixed(8);
+}
 function formatBeamShort(groth) {
     const v = Number(groth) / 1e8;
     if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
